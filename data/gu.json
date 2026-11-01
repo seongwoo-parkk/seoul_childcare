@@ -1,0 +1,227 @@
+[
+ {
+  "gu": "중랑구",
+  "gini": 0.1473,
+  "supply": 344.2,
+  "cap": 8101,
+  "child": 23536,
+  "dongs": 16,
+  "pub_share": 0.4802
+ },
+ {
+  "gu": "동작구",
+  "gini": 0.1562,
+  "supply": 281.8,
+  "cap": 6973,
+  "child": 24742,
+  "dongs": 15,
+  "pub_share": 0.6329
+ },
+ {
+  "gu": "동대문구",
+  "gini": 0.1681,
+  "supply": 350.9,
+  "cap": 7575,
+  "child": 21589,
+  "dongs": 14,
+  "pub_share": 0.6174
+ },
+ {
+  "gu": "도봉구",
+  "gini": 0.1729,
+  "supply": 292.3,
+  "cap": 5041,
+  "child": 17245,
+  "dongs": 14,
+  "pub_share": 0.5247
+ },
+ {
+  "gu": "구로구",
+  "gini": 0.1963,
+  "supply": 346.5,
+  "cap": 9963,
+  "child": 28755,
+  "dongs": 15,
+  "pub_share": 0.4821
+ },
+ {
+  "gu": "노원구",
+  "gini": 0.1964,
+  "supply": 272.0,
+  "cap": 8607,
+  "child": 31639,
+  "dongs": 19,
+  "pub_share": 0.4843
+ },
+ {
+  "gu": "은평구",
+  "gini": 0.2004,
+  "supply": 265.9,
+  "cap": 8620,
+  "child": 32418,
+  "dongs": 16,
+  "pub_share": 0.5317
+ },
+ {
+  "gu": "마포구",
+  "gini": 0.2072,
+  "supply": 276.2,
+  "cap": 7015,
+  "child": 25401,
+  "dongs": 16,
+  "pub_share": 0.5818
+ },
+ {
+  "gu": "강동구",
+  "gini": 0.221,
+  "supply": 253.5,
+  "cap": 11932,
+  "child": 47062,
+  "dongs": 18,
+  "pub_share": 0.5547
+ },
+ {
+  "gu": "서초구",
+  "gini": 0.2215,
+  "supply": 230.5,
+  "cap": 10328,
+  "child": 44802,
+  "dongs": 18,
+  "pub_share": 0.6169
+ },
+ {
+  "gu": "금천구",
+  "gini": 0.2278,
+  "supply": 500.1,
+  "cap": 5205,
+  "child": 10408,
+  "dongs": 10,
+  "pub_share": 0.5283
+ },
+ {
+  "gu": "서대문구",
+  "gini": 0.2329,
+  "supply": 278.9,
+  "cap": 5948,
+  "child": 21330,
+  "dongs": 14,
+  "pub_share": 0.5636
+ },
+ {
+  "gu": "관악구",
+  "gini": 0.2352,
+  "supply": 342.2,
+  "cap": 7119,
+  "child": 20803,
+  "dongs": 21,
+  "pub_share": 0.581
+ },
+ {
+  "gu": "성동구",
+  "gini": 0.2378,
+  "supply": 256.1,
+  "cap": 5959,
+  "child": 23267,
+  "dongs": 17,
+  "pub_share": 0.7046
+ },
+ {
+  "gu": "강북구",
+  "gini": 0.2413,
+  "supply": 305.8,
+  "cap": 4821,
+  "child": 15766,
+  "dongs": 13,
+  "pub_share": 0.5217
+ },
+ {
+  "gu": "광진구",
+  "gini": 0.2442,
+  "supply": 259.0,
+  "cap": 5560,
+  "child": 21470,
+  "dongs": 15,
+  "pub_share": 0.5757
+ },
+ {
+  "gu": "성북구",
+  "gini": 0.2663,
+  "supply": 232.1,
+  "cap": 7014,
+  "child": 30225,
+  "dongs": 20,
+  "pub_share": 0.5666
+ },
+ {
+  "gu": "강남구",
+  "gini": 0.2849,
+  "supply": 174.8,
+  "cap": 9654,
+  "child": 55237,
+  "dongs": 22,
+  "pub_share": 0.5411
+ },
+ {
+  "gu": "양천구",
+  "gini": 0.2907,
+  "supply": 233.8,
+  "cap": 7376,
+  "child": 31549,
+  "dongs": 18,
+  "pub_share": 0.5416
+ },
+ {
+  "gu": "송파구",
+  "gini": 0.2944,
+  "supply": 215.1,
+  "cap": 13644,
+  "child": 63422,
+  "dongs": 27,
+  "pub_share": 0.5014
+ },
+ {
+  "gu": "영등포구",
+  "gini": 0.3189,
+  "supply": 350.9,
+  "cap": 9828,
+  "child": 28011,
+  "dongs": 18,
+  "pub_share": 0.4588
+ },
+ {
+  "gu": "용산구",
+  "gini": 0.3205,
+  "supply": 290.9,
+  "cap": 4038,
+  "child": 13880,
+  "dongs": 16,
+  "pub_share": 0.5089
+ },
+ {
+  "gu": "강서구",
+  "gini": 0.3394,
+  "supply": 267.3,
+  "cap": 11672,
+  "child": 43668,
+  "dongs": 20,
+  "pub_share": 0.4636
+ },
+ {
+  "gu": "종로구",
+  "gini": 0.4137,
+  "supply": 400.4,
+  "cap": 3657,
+  "child": 9133,
+  "dongs": 17,
+  "pub_share": 0.4679
+ },
+ {
+  "gu": "중구",
+  "gini": 0.4822,
+  "supply": 671.1,
+  "cap": 4690,
+  "child": 6989,
+  "dongs": 15,
+  "pub_share": 0.4488
+ }
+]

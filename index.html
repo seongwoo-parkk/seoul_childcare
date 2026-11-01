@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아이 키우기 좋은 동네는 어디인가 · 서울 어린이집 공급 지표</title>
+<meta name="description" content="서울 424개 행정동의 어린이집 공급을 밀도·다양성·형평성 지표로 측정하고 지도와 그래프로 해석한 분석 앱">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #ffffff; --ink: #1f2328; --muted: #5f6670; --line: #e3e1da;
+    --accent: #c2410c; --accent2: #1d4ed8; --soft: #fbf3ec;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Noto Sans KR", system-ui, sans-serif; line-height: 1.7; }
+  header { background: #1f2a37; color: #fff; padding: 48px 20px 40px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  header .kicker { font-size: 14px; letter-spacing: .04em; color: #fdba74; margin: 0 0 8px; }
+  header h1 { font-size: clamp(26px, 4vw, 40px); margin: 0 0 10px; line-height: 1.3; }
+  header p.sub { margin: 0; color: #d1d5db; font-size: 16px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 28px; }
+  .kpi { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 10px; padding: 14px 16px; }
+  .kpi b { display: block; font-size: 26px; line-height: 1.2; }
+  .kpi span { font-size: 13px; color: #d1d5db; }
+  nav { position: sticky; top: 0; z-index: 1000; background: rgba(246,245,241,.95); border-bottom: 1px solid var(--line); backdrop-filter: blur(4px); }
+  nav .wrap { display: flex; gap: 18px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; font-size: 14px; white-space: nowrap; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a:hover { color: var(--accent); }
+  section { padding: 44px 0 8px; }
+  h2 { font-size: 24px; margin: 0 0 6px; }
+  h2 small { display: block; font-size: 13px; color: var(--accent); font-weight: 500; letter-spacing: .05em; }
+  h3 { font-size: 18px; margin: 22px 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .q { counter-reset: q; list-style: none; padding: 0; margin: 0; }
+  .q li { counter-increment: q; padding: 10px 0 10px 40px; position: relative; border-bottom: 1px dashed var(--line); }
+  .q li:last-child { border-bottom: 0; }
+  .q li::before { content: "Q" counter(q); position: absolute; left: 0; top: 10px; font-weight: 700; color: var(--accent); }
+  .ind h3 { margin-top: 0; }
+  .ind .tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 99px; background: var(--soft); color: var(--accent); margin-bottom: 6px; }
+  .formula { font-family: "Cambria Math", "Times New Roman", serif; font-size: 17px; background: #f8f8f6; border-left: 3px solid var(--accent); padding: 8px 12px; margin: 8px 0; overflow-x: auto; }
+  .meaning { font-size: 14px; color: var(--muted); margin: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  #mapbox { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+  #map { height: 620px; border-radius: 12px; border: 1px solid var(--line); background: #e9e7e1; }
+  .layers { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .layers button { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; color: var(--ink); }
+  .layers button.on { background: #1f2a37; color: #fff; border-color: #1f2a37; }
+  #panel { font-size: 14px; }
+  #panel h3 { margin: 0 0 2px; }
+  #panel .gu { color: var(--muted); margin: 0 0 10px; }
+  #panel dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+  #panel dt { color: var(--muted); }
+  #panel dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  #panel .note { margin-top: 10px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 6px 8px; border-radius: 8px; font-size: 13px; }
+  .bars { margin-top: 12px; }
+  .bars .row { display: grid; grid-template-columns: 78px 1fr 44px; gap: 6px; align-items: center; font-size: 12px; margin: 2px 0; }
+  .bars .bar { height: 9px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+  .bars .bar i { display: block; height: 100%; background: #1f2a37; }
+  .legend { background: rgba(255,255,255,.95); padding: 8px 10px; border-radius: 8px; font-size: 12px; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .legend i { display: inline-block; width: 14px; height: 12px; margin-right: 6px; vertical-align: -1px; border: 1px solid rgba(0,0,0,.15); }
+  .search { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 14px; margin-bottom: 12px; }
+  .chart { width: 100%; height: 420px; }
+  .cap { font-size: 13px; color: var(--muted); margin: 6px 0 0; }
+  .find { padding-left: 0; list-style: none; margin: 0; }
+  .find li { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .find li:last-child { border-bottom: 0; }
+  .find b { color: var(--accent); }
+  ul.lim li { margin: 4px 0; }
+  .src { font-size: 14px; }
+  footer { margin-top: 48px; padding: 24px 0 40px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  a { color: var(--accent2); }
+  @media (max-width: 860px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .grid2, .grid4, #mapbox { grid-template-columns: 1fr; }
+    #map { height: 460px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <p class="kicker">스마트시티융합기술세미나 · 과제 3 · 도시 현상을 지표로 측정하고 공간적으로 해석하기</p>
+    <h1>아이 키우기 좋은 동네는 어디인가</h1>
+    <p class="sub">서울 424개 행정동의 어린이집 공급을 <b>밀도 · 다양성 · 형평성</b> 지표로 측정했습니다</p>
+    <div class="kpis">
+      <div class="kpi"><b id="k-fac">-</b><span>운영 중인 어린이집</span></div>
+      <div class="kpi"><b id="k-cap">-</b><span>총 정원</span></div>
+      <div class="kpi"><b id="k-sup">-</b><span>0~9세 1,000명당 정원 (서울 평균)</span></div>
+      <div class="kpi"><b id="k-gini">-</b><span>행정동 간 공급 Gini 계수</span></div>
+    </div>
+  </div>
+</header>
+<nav><div class="wrap">
+  <a href="#q">연구 질문</a><a href="#data">자료와 전처리</a><a href="#ind">지표</a><a href="#map-sec">지도</a>
+  <a href="#charts">그래프</a><a href="#find">결과 해석</a><a href="#lim">한계</a><a href="#src">출처·재현</a>
+</div></nav>
+
+<main class="wrap">
+  <section id="q">
+    <h2><small>01</small>연구 질문</h2>
+    <p class="lead">현상은 하나, "영유아 돌봄 공급의 지역 격차"입니다. 같은 서울 안에서도 아이가 사는 동네에 따라 어린이집 자리가 충분한지, 고를 수 있는 선택지가 있는지가 다를 수 있습니다.</p>
+    <div class="card">
+      <ol class="q">
+        <li>서울 행정동별로 영유아 인구 대비 어린이집 정원(공급률)은 어떻게 다른가?</li>
+        <li>아이가 많이 사는 동네일수록 어린이집 공급은 충분한가, 부족한가?</li>
+        <li>공급은 행정동 사이에 얼마나 불평등하며(Gini), 운영 유형의 구성(다양성·공공성)은 동네마다 어떻게 다른가?</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="data">
+    <h2><small>02</small>자료와 전처리</h2>
+    <div class="card">
+      <table>
+        <tr><th style="width:22%">자료</th><th>내용과 처리</th></tr>
+        <tr><td>서울시 어린이집 정보</td><td>서울 열린데이터광장 OpenAPI <code>ChildCareInfo</code>, 기준일 2026-11-01. 전체 9,495건 중 운영 중(정상·재개) 3,919곳을 사용했고, 좌표가 서울 밖으로 찍힌 1곳(은평구 구립 내일어린이집)을 제외해 <b>3,918곳, 정원 190,340명, 현원 130,844명</b>을 분석했습니다. 연락처 등 분석에 쓰지 않는 항목은 저장하지 않았습니다.</td></tr>
+        <tr><td>서울 생활인구 (행정동)</td><td>OpenAPI <code>SPOP_LOCAL_RESD_DONG</code>. API에서 받을 수 있는 최신 달인 2026년 7월 1~31일의 <b>03시대 0~9세 남녀 생활인구 평균</b>을 거주 아동 인구의 대용값으로 썼습니다 (서울 합계 692,348명).</td></tr>
+        <tr><td>행정동 경계</td><td>공개 행정동 경계 <code>vuski/admdongkor</code> ver20250101 (서울 426개). 생활인구의 행정동 체계(424개)에 맞추기 위해 강북구 6개 동의 코드를 대응시키고, 개포3동(생활인구는 옛 일원2동 코드), 상일제1·2동 → 상일동, 항동 → 오류2동과 합쳤습니다.</td></tr>
+        <tr><td>공간 결합</td><td>경계를 EPSG:5179(미터 단위)로 바꿔 면적을 계산하고, 어린이집 위경도를 점으로 만들어 행정동 폴리곤에 공간 결합(point-in-polygon)했습니다. 운영 유형 7개: 국공립 · 민간 · 가정 · 직장 · 법인·단체등 · 사회복지법인 · 협동.</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="ind">
+    <h2><small>03</small>지표</h2>
+    <p class="lead">수업에서 다룬 도시계획 지표 중 밀도 · 다양성(Gini–Simpson) · 형평성(Gini) · 입지계수(LQ)를 썼습니다. 공간 단위는 모두 행정동(424개)입니다.</p>
+    <div class="grid4">
+      <div class="card ind">
+        <span class="tag">밀도</span>
+        <h3>① 영유아 1,000명당 정원 (공급률)</h3>
+        <div class="formula">S<sub>d</sub> = C<sub>d</sub> ÷ P<sub>d</sub> × 1,000</div>
+        <p class="meaning">C<sub>d</sub>: 동 d의 어린이집 정원 합, P<sub>d</sub>: 0~9세 인구. 높으면 아이 수에 비해 자리가 많고, 낮으면 자리가 부족한 동네입니다.</p>
+      </div>
+      <div class="card ind">
+        <span class="tag">다양성</span>
+        <h3>② 운영 유형 다양성 (Gini–Simpson)</h3>
+        <div class="formula">D<sub>d</sub> = 1 − Σ<sub>k</sub> p<sub>dk</sub><sup>2</sup></div>
+        <p class="meaning">p<sub>dk</sub>: 동 d 정원 중 유형 k의 비중 (7개 유형). 0이면 한 유형만 있고, 최댓값은 1 − 1/7 ≈ 0.857입니다. 높을수록 부모가 고를 수 있는 운영 형태가 다양합니다.</p>
+      </div>
+      <div class="card ind">
+        <span class="tag">형평성</span>
+        <h3>③ 공급의 불평등 (Gini 계수)</h3>
+        <div class="formula">G = 1 − Σ<sub>i</sub> (X<sub>i</sub> − X<sub>i−1</sub>)(Y<sub>i</sub> + Y<sub>i−1</sub>)</div>
+        <p class="meaning">동을 공급률이 낮은 순으로 정렬해 누적 아동 비율 X와 누적 정원 비율 Y로 로렌츠 곡선을 그립니다. 0이면 모든 아이에게 자리가 똑같이 돌아가고, 1에 가까울수록 정원이 일부 동에 몰려 있습니다. 서울 전체와 자치구별로 계산했습니다.</p>
+      </div>
+      <div class="card ind">
+        <span class="tag">입지계수 LQ</span>
+        <h3>④ 국공립 정원 LQ (공공성)</h3>
+        <div class="formula">LQ<sub>d</sub> = (C<sub>d</sub><sup>국공립</sup> ÷ C<sub>d</sub>) ÷ (C<sup>국공립</sup> ÷ C)</div>
+        <p class="meaning">서울 전체 정원 중 국공립 비중은 <span id="t-pub">-</span>입니다. LQ가 1보다 크면 그 동의 국공립 비중이 서울보다 높고, 1보다 작으면 낮습니다.</p>
+      </div>
+    </div>
+    <p class="cap">보조 지표: 정원 충족률(현원 ÷ 정원, 서울 <span id="t-fill">-</span>), 직장어린이집을 뺀 공급률, 그리고 교차 분류에 쓰는 아동 LQ(동의 0~9세 비중 ÷ 서울의 0~9세 비중).</p>
+  </section>
+
+  <section id="map-sec">
+    <h2><small>04</small>공간 시각화 · 행정동 지도</h2>
+    <p class="lead">버튼으로 지표를 바꾸고, 동을 누르면 오른쪽에 상세 값이 나타납니다. 색 구간은 5분위입니다 (LQ와 교차 분류는 고정 구간).</p>
+    <div class="layers" id="layers"></div>
+    <div id="mapbox">
+      <div id="map" role="img" aria-label="서울 행정동 어린이집 지표 단계구분도"></div>
+      <div class="card" id="panelwrap">
+        <input class="search" id="search" list="dong-list" placeholder="동 이름 검색 (예: 위례동)">
+        <datalist id="dong-list"></datalist>
+        <div id="panel"><p class="meaning">지도에서 행정동을 눌러 보세요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="charts">
+    <h2><small>05</small>비공간 시각화</h2>
+    <div class="grid2">
+      <div class="card"><h3>로렌츠 곡선: 정원은 아이들에게 고르게 돌아가는가</h3><div id="c-lorenz" class="chart"></div>
+        <p class="cap">대각선은 완전 균등, 곡선과 대각선 사이가 넓을수록 불평등합니다.</p></div>
+      <div class="card"><h3>아이가 많은 동일수록 공급률은 낮다</h3><div id="c-scatter" class="chart"></div>
+        <p class="cap">점 하나가 행정동 하나입니다 (두 축 모두 로그 눈금). 점선은 서울 평균 공급률입니다.</p></div>
+      <div class="card"><h3>자치구별 공급률</h3><div id="c-gu" class="chart"></div>
+        <p class="cap">구 전체 정원 ÷ 구 전체 0~9세 인구 × 1,000.</p></div>
+      <div class="card"><h3>자치구 안의 동 간 불평등 (구별 Gini)</h3><div id="c-gugini" class="chart"></div>
+        <p class="cap">같은 구 안에서 동끼리 비교한 Gini입니다.</p></div>
+      <div class="card"><h3>공급이 부족한 동일수록 자리가 더 차 있다</h3><div id="c-fill" class="chart"></div>
+        <p class="cap">교차 분류별 정원 충족률(현원 ÷ 정원) 분포.</p></div>
+      <div class="card"><h3>국공립 비중이 높을수록 유형 다양성은 낮다</h3><div id="c-gs" class="chart"></div>
+        <p class="cap">가로축은 국공립 정원 LQ, 세로축은 Gini–Simpson 다양성입니다.</p></div>
+    </div>
+  </section>
+
+  <section id="find">
+    <h2><small>06</small>결과 해석</h2>
+    <div class="card">
+      <ul class="find">
+        <li><b>공급 격차는 약 2배입니다.</b> 서울 평균은 0~9세 1,000명당 정원 274.9명이고, 행정동 중앙값은 297.8명입니다. 공급률 하위 20% 경계(196.7명)와 상위 20% 경계(431.7명)는 2.2배 차이가 나며, 행정동 간 Gini 계수는 0.285입니다.</li>
+        <li><b>아이가 많은 동네일수록 자리가 부족합니다.</b> 0~9세 인구와 공급률의 스피어만 순위상관은 −0.50입니다. 정원 자체는 아동 수가 많은 동에서 더 많지만(순위상관 0.65), 아동 수가 2배인 동의 정원은 약 1.48배에 그칩니다(로그-로그 기울기 0.56). 그 결과 공급률이 서울 평균보다 낮은 187개 동(44%)에 서울 0~9세 아동의 58.4%가 살고 있습니다.</li>
+        <li><b>"아동 많음·공급 부족" 동은 강남·서초·송파·양천에 몰려 있습니다.</b> 아동 비중이 서울보다 높으면서 공급률이 평균보다 낮은 동은 109곳이고, 서울 0~9세의 44.4%(약 30.8만 명)가 여기에 삽니다. 강남구 12곳, 양천구 11곳, 송파구 11곳, 서초구 10곳으로, 아동 수가 많은 순으로 위례동·세곡동·오류2동·항동·강일동·양재1동·길음1동 등이 이 유형에 속합니다. 위례·세곡·항동·강일처럼 택지개발로 아파트 단지가 새로 들어선 곳이 여럿 포함됩니다. 자치구 단위로도 강남구(174.8명)·송파구(215.1명)·서초구(230.5명)가 가장 낮습니다.</li>
+        <li><b>부족은 실제 이용에서도 드러납니다.</b> 정원 충족률(현원 ÷ 정원)의 중앙값은 "아동 많음·공급 부족" 동에서 75.4%로, "아동 적음·공급 충분" 동(63.9%)보다 높습니다. 아동 LQ와 충족률의 순위상관은 0.37입니다. 공급률이 낮은 곳은 자리가 더 꽉 차 있다는 뜻으로, 공급률의 차이가 서류상 숫자만은 아님을 보여 줍니다.</li>
+        <li><b>도심의 높은 공급률은 직장어린이집 때문입니다.</b> 중구(671.1명)·금천구(500.1명)·종로구(400.4명)의 공급률이 높고, 구 안의 불평등도 중구(Gini 0.48)·종로구(0.41)가 가장 큽니다. 소공동·사직동은 정원 100%, 여의동은 92%가 직장어린이집으로, 거주 아동보다 출근하는 부모의 아이를 위한 자리입니다. 다만 직장어린이집을 빼고 계산해도 서울 Gini는 0.281로 거의 같아, 동 간 불평등은 도심 효과만으로 설명되지 않습니다.</li>
+        <li><b>공공성과 다양성은 엇갈립니다.</b> 국공립 정원 LQ와 Gini–Simpson 다양성의 순위상관은 −0.66입니다. 정원이 모두 국공립인 동이 26곳, 한 유형만 있는 동이 32곳으로, 국공립 비중이 90%를 넘는 동의 다양성 중앙값은 0입니다. 한 유형의 비중이 커지면 다양성의 상한이 수식상 낮아지므로 이 관계의 일부는 지표 정의에서 나오지만, 실제로 국공립 위주로 공급된 동에서는 운영 형태의 선택지가 거의 없다는 점은 분명합니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="lim">
+    <h2><small>07</small>한계</h2>
+    <div class="card">
+      <ul class="lim">
+        <li><b>아동 인구:</b> 생활인구는 연령 구간이 0~9세라 어린이집 대상(주로 0~5세)보다 넓고, 통신 자료로 추정한 값이라 주민등록인구와 다릅니다. 강서구 화곡8동은 03시 생활인구가 88,525명(0.575㎢, ㎢당 약 15만 명)으로 다른 동과 동떨어져 이상치로 의심됩니다. 이 동을 빼도 Gini는 0.277, 순위상관은 −0.495로 결론은 같습니다.</li>
+        <li><b>시점 차이:</b> 생활인구는 2026년 7월, 어린이집은 2026년 11월 자료입니다.</li>
+        <li><b>행정동 경계:</b> 어린이집은 동 경계를 넘어 이용하므로, 동 단위 공급률은 거리 기반 접근성을 대신하지 못합니다. 이웃 동의 공급을 반영한 접근성 분석이 다음 과제입니다.</li>
+        <li><b>범위:</b> 유치원, 아이돌봄서비스 등 다른 돌봄 수단은 포함하지 않았고, 정원은 인가 정원이라 연령별 반 편성과는 다를 수 있습니다.</li>
+        <li><b>해석:</b> 공급률은 분모에 아동 수가 들어가 아동 수와 음의 상관이 어느 정도 구조적으로 생깁니다. 그래서 정원과 아동 수의 탄력성(0.56)과 충족률을 함께 제시했습니다. 상관은 인과를 뜻하지 않습니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="src">
+    <h2><small>08</small>출처와 재현</h2>
+    <div class="card src">
+      <ul>
+        <li>서울 열린데이터광장: 서울시 어린이집 정보(<code>ChildCareInfo</code>), 서울 생활인구 내국인 행정동 단위(<code>SPOP_LOCAL_RESD_DONG</code>)</li>
+        <li>행정동 경계: <a href="https://github.com/vuski/admdongkor" target="_blank" rel="noopener">vuski/admdongkor</a> ver20250101</li>
+        <li>배경지도: Esri World Light Gray Base (Esri, HERE, Garmin, © OpenStreetMap contributors)</li>
+        <li>코드: <a href="https://github.com/seongwoo-parkk/seoul_childcare" target="_blank" rel="noopener">github.com/seongwoo-parkk/seoul_childcare</a> — <code>scripts/fetch_data.py</code>(수집), <code>scripts/build_indicators.py</code>(지표 계산). API 키는 저장소에 포함하지 않았습니다.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap">스마트시티융합기술세미나 과제 3 · 박성우 · 자료 기준: 어린이집 2026-11-01, 생활인구 2026년 7월</div></footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
